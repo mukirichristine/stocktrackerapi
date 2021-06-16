@@ -1,4 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
+import { Company } from 'src/modules/companies/company.entity';
+import { DailyPrice } from 'src/modules/daily-prices/daily-prices.entity';
 import { Sector } from 'src/modules/sectors/sector.entity';
 import { StockExchange } from 'src/modules/stock-exchanges/stock-exchange.entity';
 import { User } from 'src/users/user.entity';
@@ -23,7 +25,7 @@ export const databaseProviders = [{
            config = databaseConfig.development;
         }
         const sequelize = new Sequelize(config);
-        sequelize.addModels([User,Sector,StockExchange]);
+        sequelize.addModels([User,Sector,StockExchange,Company,DailyPrice]);
         await sequelize.sync();
         return sequelize;
     },
