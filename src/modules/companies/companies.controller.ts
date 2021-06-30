@@ -20,11 +20,25 @@ export class CompaniesController {
         // create a new post and return the newly created post
         return await this.companiesService.create(stockExchange);
     }
-    @Get(':id')
+    /* @Get(':id')
     async findOne(@Param('id') id: number): Promise<CompanyEntity> {
         // find the post with this id
         console.log(id)
         const company = await this.companiesService.findOne(id);
+
+        // if the post doesn't exit in the db, throw a 404 error
+        if (!company) {
+            throw new NotFoundException('This Company doesn\'t exist');
+        }
+
+        // if post exist, return the post
+        return company;
+    } */
+    @Get(':trading_symbol')
+    async findOneByTradingSymbol(@Param('trading_symbol') trading_symbol: number): Promise<CompanyEntity> {
+        // find the post with this id
+        console.log(trading_symbol)
+        const company = await this.companiesService.findOneUsingTradingSymbol(trading_symbol);
 
         // if the post doesn't exit in the db, throw a 404 error
         if (!company) {

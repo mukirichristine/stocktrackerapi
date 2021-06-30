@@ -1,39 +1,33 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, ManyToOne, OneToMany } from 'typeorm';
+import { DailyPrice} from '../daily-prices/daily-prices.entity';
 import { Sector } from '../sectors/sector.entity';
 import { StockExchange } from '../stock-exchanges/stock-exchange.entity';
 
 
-@Table
-export class Company extends Model {
+@Entity('companies')
+export class Company {
+    @PrimaryGeneratedColumn()
+    id: number;
+    
     @Column({
-        type: DataType.STRING,
-        allowNull: false,
+        nullable:false
     })
     name: string;
 
     @Column({
-        type: DataType.TEXT,
-        allowNull: false,
+        nullable:false
     })
     trading_symbol: string;
 
-    @ForeignKey(() => Sector)
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: false,
-    })
-    sectorId: number;
+    @ManyToOne(() => Sector, (sector: Sector) => sector.companies)
+    public sector: Sector;
 
-    @BelongsTo(() => Sector)
-    sector: Sector;
+    @ManyToOne(() => StockExchange, (stockExchange: StockExchange) => stockExchange.companies)
+    public stocKExchange: StockExchange;
 
-    @ForeignKey(() => StockExchange)
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: false,
-    })
-    stockExchangeId: number;
+    @OneToMany(() => DailyPrice, (dailyPrice: DailyPrice) => dailyPrice.company)
+    public dailyPrices: DailyPrice[];
 
-    @BelongsTo(() => StockExchange)
-    stockexchange: StockExchange;
+    
 }

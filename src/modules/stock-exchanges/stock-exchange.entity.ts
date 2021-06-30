@@ -1,12 +1,20 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Entity, PrimaryGeneratedColumn,  } from 'typeorm';
+import { OneToMany } from 'typeorm';
+import { Company } from '../companies/company.entity';
 
 
-@Table
-export class StockExchange extends Model<StockExchange> {
+@Entity('stockexchanges')
+export class StockExchange {
+
+    @PrimaryGeneratedColumn()
+    id: number;
+    
     @Column({
-        type: DataType.STRING,
-        allowNull: false,
+        nullable: false,
     })
     name: string;
+    
+    @OneToMany(() => Company, (company: Company) => company.stocKExchange)
+    public companies: Company[];
  
 }

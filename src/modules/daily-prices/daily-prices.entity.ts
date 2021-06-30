@@ -1,37 +1,28 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column,  Entity, PrimaryGeneratedColumn, ManyToOne, Unique} from 'typeorm';
 import { Company } from '../companies/company.entity';
 
 
-@Table
-export class DailyPrice extends Model {
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-    })
+@Entity('dailyprices')
+@Unique(['company.id','createdAt'])
+export class DailyPrice {
+    
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column("double")
     openingPrice: number;
 
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-    })
+    @Column("double")
     closingPrice: number;
 
-    @ForeignKey(() => Company)
     @Column({
-        type: DataType.INTEGER,
-        allowNull: false,
-    })
-    companyId: number;
-
-    @Column({
-        type: DataType.DATEONLY,
-        allowNull: false,
+        type: 'date',
+        nullable: false,
     })
     createdAt: string;
 
-
-    @BelongsTo(() => Company)
-    company: Company;
+    @ManyToOne(() => Company, (company: Company) => company.dailyPrices)
+    public company: Company;
 
  
 }

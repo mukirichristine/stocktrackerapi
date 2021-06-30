@@ -1,6 +1,6 @@
 import { IsNotEmpty, MinLength } from 'class-validator';
 
-export class DailyPriceDto {
+export class InsertDailyPriceDto {
     @IsNotEmpty()
     readonly openingPrice: number;
 
@@ -8,7 +8,7 @@ export class DailyPriceDto {
     readonly closingPrice: number;
 
     @IsNotEmpty()
-    readonly companyAbbr: string;
+    readonly companyId: number;
 
     @IsNotEmpty()
     readonly createdAt:string;

@@ -1,47 +1,56 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, } from '@nestjs/common';
 import { DailyPrice } from './daily-prices.entity';
 import { DailyPriceDto } from './dto/daily-price.dto';
 import { DailyStatsDto } from './dto/daily-stats.dto';
 import { DAILY_PRICE_REPOSITORY } from '../../core/constants';
 import { Company } from '../companies/company.entity';
-import { Sequelize } from 'sequelize-typescript'
-
-
+//import { Sequelize } from 'sequelize-typescript'
+import { InsertDailyPriceDto } from './dto/insert-daily-price.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DailyPriceRepository } from './daily-prices.repository';
+import { CompanyRepository } from '../companies/company.repository';
+import { DailyPriceData } from 'src/core/interfaces/dailyprice.interface';
 
 @Injectable()
 export class DailyPricesService {
 
 
-    constructor(@Inject(DAILY_PRICE_REPOSITORY) private readonly dailyPriceRepository: typeof DailyPrice) { }
-
-    async create(company: DailyPrice): Promise<DailyPrice> {
-        return await this.dailyPriceRepository.create(company);
-    }
-
-    async findAll(): Promise<DailyPrice[]> {
-        return await this.dailyPriceRepository.findAll();
-    }
-
-    async findOne(id): Promise<DailyPrice> {
-        return await this.dailyPriceRepository.findOne({
-        	where: { id },
-        	include: [{ model: Company}],
-    	});
-    }
-
-    async delete(id) {
-        return await this.dailyPriceRepository.destroy({ where: { id} });
-    }
-
-    async update(id, data) {
-        const [numberOfAffectedRows, [updatedPost]] = await this.dailyPriceRepository.update({ ...data }, { where: { id }, returning: true });
-
-        return { numberOfAffectedRows, updatedPost };
+    constructor(
+        @InjectRepository(DailyPriceRepository) private dailyPriceRepository: DailyPriceRepository,
+        @InjectRepository(CompanyRepository) private companyRepository: CompanyRepository
+    ) { }
+    
+    async create(company: DailyPriceDto): Promise<DailyPrice> {
+        
+        const company_info = await this.companyRepository.findByTradingSymbol(company.companyAbbr);
+        return await this.dailyPriceRepository.insertDailyPrice(company,company_info);
+                    
     }
     
 
+    async findAll(): Promise<DailyPrice[]> {
+        return await this.dailyPriceRepository.find();
+    }
 
-    async dailyStatistics(): Promise<DailyPrice[]> {
+    async findOne(id): Promise<DailyPrice> {
+        return await this.dailyPriceRepository.findOne(id);
+    }
+    
+
+    async delete(id) {
+        return await this.dailyPriceRepository.delete(id);
+    }
+
+   /*  async update(id, data) {
+        const [numberOfAffectedRows, [updatedPost]] = await this.dailyPriceRepository.update({ ...data }, { where: { id }, returning: true });
+
+        return { numberOfAffectedRows, updatedPost };
+    } */
+    
+
+
+    /* async dailyStatistics(): Promise<DailyPrice[]> {
         return await this.dailyPriceRepository
                          .findAll({
                              attributes: [
@@ -52,8 +61,8 @@ export class DailyPricesService {
                                  createdAt:new Date().setDate(new Date().getDate()-1)
                              }
                          });
-    }
-    async dailyStats(): Promise<DailyPrice[]> {
+    } */
+    /* async dailyStats(): Promise<DailyPrice[]> {
         return await this.dailyPriceRepository.findAll({
             attributes: {
                 include: [
@@ -76,5 +85,5 @@ export class DailyPricesService {
                 [Sequelize.literal('ChangeInPrice'), 'DESC']
             ]
         });
-    }
+    } */
 }
